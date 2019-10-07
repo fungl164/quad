@@ -1,4 +1,4 @@
-module github.com/cayleygraph/quad
+module github.com/fungl164/quad
 
 go 1.12
 
