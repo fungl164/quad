@@ -1,7 +1,10 @@
 package quad
 
 import (
+	"bytes"
 	"crypto/sha1"
+	"encoding/base64"
+	"encoding/gob"
 	"fmt"
 	"hash"
 	"math/rand"
@@ -93,6 +96,8 @@ func AsValue(v interface{}) (out Value, ok bool) {
 		out = v
 	case string:
 		out = String(v)
+	case []byte:
+		out = Bytes(v)
 	case int:
 		out = Int(v)
 	case int8:
@@ -312,10 +317,12 @@ const (
 
 // TODO(dennwc): make these configurable
 const (
-	defaultIntType   IRI = schema.Integer
-	defaultFloatType IRI = schema.Float
-	defaultBoolType  IRI = schema.Boolean
-	defaultTimeType  IRI = schema.DateTime
+	defaultIntType    IRI = schema.Integer
+	defaultFloatType  IRI = schema.Float
+	defaultBoolType   IRI = schema.Boolean
+	defaultTimeType   IRI = schema.DateTime
+	defaultBytesType  IRI = schema.Bytes
+	defaultStructType IRI = schema.Struct
 )
 
 func init() {
@@ -332,6 +339,12 @@ func init() {
 	// time types
 	RegisterStringConversion(defaultTimeType, stringToTime)
 	RegisterStringConversion(nsXSD+`dateTime`, stringToTime)
+	// []byte types
+	RegisterStringConversion(defaultBytesType, stringToBytes)
+	RegisterStringConversion(nsXSD+`bytes`, stringToBytes)
+	// struct types
+	RegisterStringConversion(defaultStructType, stringToStruct)
+	RegisterStringConversion(nsXSD+`struct`, stringToStruct)
 }
 
 var knownConversions = make(map[IRI]StringConversion)
@@ -384,6 +397,28 @@ func stringToTime(s string) (Value, error) {
 		return nil, err
 	}
 	return Time(v), nil
+}
+
+func stringToBytes(s string) (Value, error) {
+	v := base64.StdEncoding.EncodeToString([]byte(s))
+	return Bytes(v), nil
+}
+
+func stringToStruct(s string) (Value, error) {
+	var buff bytes.Buffer
+	de := gob.NewDecoder(&buff)
+
+	_, err := buff.Write([]byte(s))
+	if err != nil {
+		return nil, err
+	}
+
+	var v interface{}
+	err = de.Decode(v)
+	if err != nil {
+		return nil, err
+	}
+	return Struct{v}, nil
 }
 
 // Int is a native wrapper for int64 type.
@@ -464,6 +499,52 @@ func (s Time) TypedString() TypedString {
 		// TODO(dennwc): this is used to compute hash, thus we might want to include nanos
 		Value: String(time.Time(s).UTC().Format(time.RFC3339)),
 		Type:  defaultTimeType,
+	}
+}
+
+// Bytes is representation of []byte as a value
+type Bytes string
+
+func (b Bytes) String() string {
+	return string(b)
+}
+func (b Bytes) Native() interface{} {
+	return []byte(b)
+}
+func (b Bytes) Equal(v Value) bool {
+	t, ok := v.(Bytes)
+	if !ok {
+		return false
+	}
+	return b == t
+}
+func (b Bytes) TypedString() TypedString {
+	return TypedString{
+		// TODO(dennwc): this is used to compute hash
+		Value: String(string(b)),
+		Type:  defaultBytesType,
+	}
+}
+
+type Struct struct {
+	Value interface{}
+}
+
+func (s Struct) String() string {
+	return s.TypedString().String()
+}
+func (s Struct) Native() interface{} { return interface{}(s.Value) }
+func (s Struct) Equal(v Value) bool {
+	t, ok := v.(Struct)
+	if !ok {
+		return false
+	}
+	return s == t
+}
+func (s Struct) TypedString() TypedString {
+	return TypedString{
+		Value: String(fmt.Sprintf("%#+v", s.Value)),
+		Type:  defaultStructType,
 	}
 }
 

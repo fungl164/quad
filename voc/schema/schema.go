@@ -25,6 +25,8 @@ const (
 	True = Prefix + `True`
 	// Data type: Text.
 	Text = Prefix + `Text`
+	// Data type: Bytes.
+	Bytes = Prefix + "Bytes"
 	// Data type: URL.
 	URL = Prefix + `URL`
 	// Data type: Number.
@@ -39,6 +41,8 @@ const (
 	Time = Prefix + `Time`
 	// A combination of date and time of day in the form [-]CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm] (see Chapter 5.4 of ISO 8601).
 	DateTime = Prefix + `DateTime`
+	// A native golang struct (serialized with gob).
+	Struct = Prefix + `Struct`
 
 	// A class, also often called a 'Type'; equivalent to rdfs:Class.
 	Class = Prefix + "Class"

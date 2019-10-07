@@ -17,6 +17,8 @@ func MakeValue(qv quad.Value) *Value {
 	switch v := qv.(type) {
 	//case quad.Raw:
 	//	return &Value{&Value_Raw{[]byte(v)}}
+	case quad.Bytes:
+		return &Value{Value: &Value_Raw{[]byte(v)}}
 	case quad.String:
 		return &Value{Value: &Value_Str{string(v)}}
 	case quad.IRI:
@@ -78,8 +80,10 @@ func (m *Value) ToNative() (qv quad.Value) {
 		return nil
 	}
 	switch v := m.Value.(type) {
+	// case *Value_Raw:
+	// 	return quad.StringToValue(string(v.Raw))
 	case *Value_Raw:
-		return quad.StringToValue(string(v.Raw))
+		return quad.Bytes(v.Raw)
 	case *Value_Str:
 		return quad.String(v.Str)
 	case *Value_Iri:
