@@ -22,7 +22,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Quad is in internal representation of quad used by Cayley.
 type Quad struct {
@@ -394,10 +394,10 @@ type isStrictQuad_Ref_Value interface {
 }
 
 type StrictQuad_Ref_BnodeLabel struct {
-	BnodeLabel string `protobuf:"bytes,2,opt,name=bnode_label,json=bnodeLabel,proto3,oneof"`
+	BnodeLabel string `protobuf:"bytes,2,opt,name=bnode_label,json=bnodeLabel,proto3,oneof" json:"bnode_label,omitempty"`
 }
 type StrictQuad_Ref_Iri struct {
-	Iri string `protobuf:"bytes,3,opt,name=iri,proto3,oneof"`
+	Iri string `protobuf:"bytes,3,opt,name=iri,proto3,oneof" json:"iri,omitempty"`
 }
 
 func (*StrictQuad_Ref_BnodeLabel) isStrictQuad_Ref_Value() {}
@@ -424,70 +424,12 @@ func (m *StrictQuad_Ref) GetIri() string {
 	return ""
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*StrictQuad_Ref) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _StrictQuad_Ref_OneofMarshaler, _StrictQuad_Ref_OneofUnmarshaler, _StrictQuad_Ref_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*StrictQuad_Ref) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*StrictQuad_Ref_BnodeLabel)(nil),
 		(*StrictQuad_Ref_Iri)(nil),
 	}
-}
-
-func _StrictQuad_Ref_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*StrictQuad_Ref)
-	// value
-	switch x := m.Value.(type) {
-	case *StrictQuad_Ref_BnodeLabel:
-		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
-		_ = b.EncodeStringBytes(x.BnodeLabel)
-	case *StrictQuad_Ref_Iri:
-		_ = b.EncodeVarint(3<<3 | proto.WireBytes)
-		_ = b.EncodeStringBytes(x.Iri)
-	case nil:
-	default:
-		return fmt.Errorf("StrictQuad_Ref.Value has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _StrictQuad_Ref_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*StrictQuad_Ref)
-	switch tag {
-	case 2: // value.bnode_label
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Value = &StrictQuad_Ref_BnodeLabel{x}
-		return true, err
-	case 3: // value.iri
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Value = &StrictQuad_Ref_Iri{x}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _StrictQuad_Ref_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*StrictQuad_Ref)
-	// value
-	switch x := m.Value.(type) {
-	case *StrictQuad_Ref_BnodeLabel:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.BnodeLabel)))
-		n += len(x.BnodeLabel)
-	case *StrictQuad_Ref_Iri:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.Iri)))
-		n += len(x.Iri)
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 // StrictQuadRaw is the same as StrictQuad, but doesn't decode underlying values.
@@ -574,6 +516,7 @@ type Value struct {
 	//	*Value_Float
 	//	*Value_Boolean
 	//	*Value_Time
+	//	*Value_Struct
 	Value                isValue_Value `protobuf_oneof:"value"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
@@ -620,34 +563,37 @@ type isValue_Value interface {
 }
 
 type Value_Raw struct {
-	Raw []byte `protobuf:"bytes,1,opt,name=raw,proto3,oneof"`
+	Raw []byte `protobuf:"bytes,1,opt,name=raw,proto3,oneof" json:"raw,omitempty"`
 }
 type Value_Str struct {
-	Str string `protobuf:"bytes,2,opt,name=str,proto3,oneof"`
+	Str string `protobuf:"bytes,2,opt,name=str,proto3,oneof" json:"str,omitempty"`
 }
 type Value_Iri struct {
-	Iri string `protobuf:"bytes,3,opt,name=iri,proto3,oneof"`
+	Iri string `protobuf:"bytes,3,opt,name=iri,proto3,oneof" json:"iri,omitempty"`
 }
 type Value_Bnode struct {
-	Bnode string `protobuf:"bytes,4,opt,name=bnode,proto3,oneof"`
+	Bnode string `protobuf:"bytes,4,opt,name=bnode,proto3,oneof" json:"bnode,omitempty"`
 }
 type Value_TypedStr struct {
-	TypedStr *Value_TypedString `protobuf:"bytes,5,opt,name=typed_str,json=typedStr,proto3,oneof"`
+	TypedStr *Value_TypedString `protobuf:"bytes,5,opt,name=typed_str,json=typedStr,proto3,oneof" json:"typed_str,omitempty"`
 }
 type Value_LangStr struct {
-	LangStr *Value_LangString `protobuf:"bytes,6,opt,name=lang_str,json=langStr,proto3,oneof"`
+	LangStr *Value_LangString `protobuf:"bytes,6,opt,name=lang_str,json=langStr,proto3,oneof" json:"lang_str,omitempty"`
 }
 type Value_Int struct {
-	Int int64 `protobuf:"varint,7,opt,name=int,proto3,oneof"`
+	Int int64 `protobuf:"varint,7,opt,name=int,proto3,oneof" json:"int,omitempty"`
 }
 type Value_Float struct {
-	Float float64 `protobuf:"fixed64,8,opt,name=float,proto3,oneof"`
+	Float float64 `protobuf:"fixed64,8,opt,name=float,proto3,oneof" json:"float,omitempty"`
 }
 type Value_Boolean struct {
-	Boolean bool `protobuf:"varint,9,opt,name=boolean,proto3,oneof"`
+	Boolean bool `protobuf:"varint,9,opt,name=boolean,proto3,oneof" json:"boolean,omitempty"`
 }
 type Value_Time struct {
-	Time *Value_Timestamp `protobuf:"bytes,10,opt,name=time,proto3,oneof"`
+	Time *Value_Timestamp `protobuf:"bytes,10,opt,name=time,proto3,oneof" json:"time,omitempty"`
+}
+type Value_Struct struct {
+	Struct []byte `protobuf:"bytes,11,opt,name=struct,proto3,oneof" json:"struct,omitempty"`
 }
 
 func (*Value_Raw) isValue_Value()      {}
@@ -660,6 +606,7 @@ func (*Value_Int) isValue_Value()      {}
 func (*Value_Float) isValue_Value()    {}
 func (*Value_Boolean) isValue_Value()  {}
 func (*Value_Time) isValue_Value()     {}
+func (*Value_Struct) isValue_Value()   {}
 
 func (m *Value) GetValue() isValue_Value {
 	if m != nil {
@@ -738,9 +685,16 @@ func (m *Value) GetTime() *Value_Timestamp {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*Value) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _Value_OneofMarshaler, _Value_OneofUnmarshaler, _Value_OneofSizer, []interface{}{
+func (m *Value) GetStruct() []byte {
+	if x, ok := m.GetValue().(*Value_Struct); ok {
+		return x.Struct
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*Value) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*Value_Raw)(nil),
 		(*Value_Str)(nil),
 		(*Value_Iri)(nil),
@@ -751,190 +705,8 @@ func (*Value) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, 
 		(*Value_Float)(nil),
 		(*Value_Boolean)(nil),
 		(*Value_Time)(nil),
+		(*Value_Struct)(nil),
 	}
-}
-
-func _Value_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*Value)
-	// value
-	switch x := m.Value.(type) {
-	case *Value_Raw:
-		_ = b.EncodeVarint(1<<3 | proto.WireBytes)
-		_ = b.EncodeRawBytes(x.Raw)
-	case *Value_Str:
-		_ = b.EncodeVarint(2<<3 | proto.WireBytes)
-		_ = b.EncodeStringBytes(x.Str)
-	case *Value_Iri:
-		_ = b.EncodeVarint(3<<3 | proto.WireBytes)
-		_ = b.EncodeStringBytes(x.Iri)
-	case *Value_Bnode:
-		_ = b.EncodeVarint(4<<3 | proto.WireBytes)
-		_ = b.EncodeStringBytes(x.Bnode)
-	case *Value_TypedStr:
-		_ = b.EncodeVarint(5<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.TypedStr); err != nil {
-			return err
-		}
-	case *Value_LangStr:
-		_ = b.EncodeVarint(6<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.LangStr); err != nil {
-			return err
-		}
-	case *Value_Int:
-		_ = b.EncodeVarint(7<<3 | proto.WireVarint)
-		_ = b.EncodeVarint(uint64(x.Int))
-	case *Value_Float:
-		_ = b.EncodeVarint(8<<3 | proto.WireFixed64)
-		_ = b.EncodeFixed64(math.Float64bits(x.Float))
-	case *Value_Boolean:
-		t := uint64(0)
-		if x.Boolean {
-			t = 1
-		}
-		_ = b.EncodeVarint(9<<3 | proto.WireVarint)
-		_ = b.EncodeVarint(t)
-	case *Value_Time:
-		_ = b.EncodeVarint(10<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Time); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("Value.Value has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _Value_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*Value)
-	switch tag {
-	case 1: // value.raw
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeRawBytes(true)
-		m.Value = &Value_Raw{x}
-		return true, err
-	case 2: // value.str
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Value = &Value_Str{x}
-		return true, err
-	case 3: // value.iri
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Value = &Value_Iri{x}
-		return true, err
-	case 4: // value.bnode
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeStringBytes()
-		m.Value = &Value_Bnode{x}
-		return true, err
-	case 5: // value.typed_str
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Value_TypedString)
-		err := b.DecodeMessage(msg)
-		m.Value = &Value_TypedStr{msg}
-		return true, err
-	case 6: // value.lang_str
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Value_LangString)
-		err := b.DecodeMessage(msg)
-		m.Value = &Value_LangStr{msg}
-		return true, err
-	case 7: // value.int
-		if wire != proto.WireVarint {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeVarint()
-		m.Value = &Value_Int{int64(x)}
-		return true, err
-	case 8: // value.float
-		if wire != proto.WireFixed64 {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeFixed64()
-		m.Value = &Value_Float{math.Float64frombits(x)}
-		return true, err
-	case 9: // value.boolean
-		if wire != proto.WireVarint {
-			return true, proto.ErrInternalBadWireType
-		}
-		x, err := b.DecodeVarint()
-		m.Value = &Value_Boolean{x != 0}
-		return true, err
-	case 10: // value.time
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Value_Timestamp)
-		err := b.DecodeMessage(msg)
-		m.Value = &Value_Time{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _Value_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*Value)
-	// value
-	switch x := m.Value.(type) {
-	case *Value_Raw:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.Raw)))
-		n += len(x.Raw)
-	case *Value_Str:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.Str)))
-		n += len(x.Str)
-	case *Value_Iri:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.Iri)))
-		n += len(x.Iri)
-	case *Value_Bnode:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(len(x.Bnode)))
-		n += len(x.Bnode)
-	case *Value_TypedStr:
-		s := proto.Size(x.TypedStr)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *Value_LangStr:
-		s := proto.Size(x.LangStr)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *Value_Int:
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(x.Int))
-	case *Value_Float:
-		n += 1 // tag and wire
-		n += 8
-	case *Value_Boolean:
-		n += 1 // tag and wire
-		n += 1
-	case *Value_Time:
-		s := proto.Size(x.Time)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type Value_TypedString struct {
@@ -1178,49 +950,50 @@ func init() {
 func init() { proto.RegisterFile("quads.proto", fileDescriptor_e699ef8faa75dcf5) }
 
 var fileDescriptor_e699ef8faa75dcf5 = []byte{
-	// 663 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x55, 0xcd, 0x6e, 0xd4, 0x3c,
-	0x14, 0x9d, 0x4c, 0xe6, 0x27, 0x73, 0x93, 0x7e, 0x1f, 0xb2, 0x50, 0x09, 0x23, 0xa8, 0xca, 0x20,
-	0x44, 0x25, 0x68, 0x5a, 0x15, 0x28, 0x48, 0xdd, 0x75, 0x35, 0x82, 0x6e, 0x30, 0x08, 0x96, 0x95,
-	0x33, 0xf1, 0x84, 0xa0, 0x8c, 0x3d, 0x24, 0x0e, 0x23, 0x5e, 0x84, 0x35, 0x0f, 0xc0, 0x13, 0xf0,
-	0x04, 0x2c, 0x79, 0x86, 0xf2, 0x16, 0xac, 0x90, 0xaf, 0x93, 0xcc, 0x3f, 0x12, 0x1b, 0x76, 0x3e,
-	0xf6, 0x3d, 0xbe, 0xe7, 0x1e, 0xdf, 0x9b, 0x80, 0xfb, 0xa1, 0x60, 0x51, 0x1e, 0x4c, 0x33, 0xa9,
-	0x24, 0xe9, 0x4c, 0x11, 0xf5, 0x0f, 0xe3, 0x44, 0xbd, 0x2b, 0xc2, 0x60, 0x24, 0x27, 0x47, 0xb1,
-	0x8c, 0xe5, 0x11, 0x1e, 0x87, 0xc5, 0x18, 0x11, 0x02, 0x5c, 0x19, 0xda, 0xe0, 0x5b, 0x13, 0x5a,
-	0x2f, 0x0b, 0x16, 0x11, 0x1f, 0xba, 0x79, 0x11, 0xbe, 0xe7, 0x23, 0xe5, 0x5b, 0xfb, 0xd6, 0x41,
-	0x8f, 0x56, 0x90, 0xdc, 0x82, 0xde, 0x34, 0xe3, 0x51, 0x32, 0x62, 0x8a, 0xfb, 0x4d, 0x3c, 0x9b,
-	0x6f, 0x90, 0x5d, 0xe8, 0x48, 0x43, 0xb3, 0xf1, 0xa8, 0x44, 0xe4, 0x3a, 0xb4, 0x53, 0x16, 0xf2,
-	0xd4, 0x6f, 0xe1, 0xb6, 0x01, 0xe4, 0x04, 0x76, 0xca, 0x6b, 0x2f, 0x3f, 0xb2, 0xb4, 0xe0, 0x7e,
-	0x7b, 0xdf, 0x3a, 0x70, 0x4f, 0x76, 0x02, 0xa3, 0x3e, 0x78, 0xa3, 0x37, 0xa9, 0x57, 0xc6, 0x20,
-	0x22, 0xa7, 0xf0, 0x7f, 0x9d, 0xae, 0x64, 0x75, 0x36, 0xb1, 0xfe, 0xab, 0xa3, 0x0c, 0xef, 0x18,
-	0x3c, 0xb9, 0x98, 0xaa, 0xbb, 0x89, 0xe4, 0xca, 0x85, 0x4c, 0x01, 0xb8, 0x28, 0xb3, 0x24, 0x38,
-	0x9b, 0x08, 0x80, 0x11, 0xb8, 0x1e, 0x7c, 0xb5, 0xc0, 0x79, 0x9b, 0x64, 0x1c, 0x0d, 0xbc, 0xbf,
-	0x6c, 0xe0, 0x1a, 0xb1, 0xf6, 0xf3, 0xc1, 0xaa, 0x9f, 0x6b, 0xa1, 0x0b, 0xf6, 0xde, 0x5b, 0xb2,
-	0x77, 0x2d, 0xb2, 0x72, 0xfb, 0xee, 0xa2, 0xdb, 0x6b, 0x51, 0xe6, 0x6c, 0x90, 0x83, 0x5b, 0xa9,
-	0xa5, 0x6c, 0xb6, 0xfa, 0xe2, 0xde, 0x1f, 0x5e, 0xdc, 0xdb, 0xfe, 0xe2, 0xde, 0xe6, 0x17, 0xf7,
-	0xaa, 0xa4, 0x9f, 0x9b, 0x00, 0xaf, 0x54, 0x96, 0x8c, 0x14, 0xba, 0x74, 0xbc, 0xea, 0xd2, 0x6e,
-	0x25, 0x75, 0x1e, 0x14, 0x50, 0x3e, 0x9e, 0x8b, 0x79, 0xbc, 0x6e, 0xd7, 0x36, 0xce, 0xdf, 0xfb,
-	0xf6, 0x70, 0xd9, 0xb7, 0x6d, 0x17, 0x9b, 0xa0, 0xfe, 0x0b, 0xb0, 0x29, 0x1f, 0x93, 0x3b, 0xe0,
-	0x86, 0x42, 0x46, 0xfc, 0xd2, 0x50, 0x71, 0x24, 0x86, 0x0d, 0x0a, 0xb8, 0x79, 0x81, 0x7d, 0x4e,
-	0xc0, 0x4e, 0xb2, 0xc4, 0x8c, 0xc4, 0xb0, 0x41, 0x35, 0x38, 0xef, 0x42, 0x1b, 0xfb, 0xea, 0x79,
-	0xcb, 0xb1, 0xae, 0x35, 0x07, 0x05, 0xec, 0xcc, 0xb3, 0xfc, 0xbb, 0xf7, 0xf8, 0x65, 0x43, 0xdb,
-	0x74, 0x3b, 0x01, 0x3b, 0x63, 0x33, 0x93, 0x4b, 0x6b, 0xcc, 0xd8, 0x4c, 0xef, 0xe5, 0x2a, 0xab,
-	0x4b, 0xd2, 0x60, 0x53, 0x2d, 0x64, 0x17, 0xda, 0x58, 0xad, 0x99, 0xee, 0x61, 0x83, 0x1a, 0x48,
-	0x9e, 0x41, 0x4f, 0x7d, 0x9a, 0xf2, 0xe8, 0x52, 0xdf, 0x62, 0x66, 0xfb, 0xe6, 0x92, 0xf3, 0xc1,
-	0x6b, 0x7d, 0xac, 0x0b, 0x17, 0xf1, 0xb0, 0x41, 0x1d, 0x55, 0x42, 0xf2, 0x04, 0x9c, 0x94, 0x89,
-	0x18, 0x89, 0x66, 0xbc, 0xfd, 0x65, 0xe2, 0x05, 0x13, 0x71, 0xcd, 0xeb, 0xa6, 0x06, 0xa1, 0x38,
-	0xa1, 0x70, 0xb6, 0x6d, 0x14, 0x27, 0x94, 0x16, 0x37, 0x4e, 0x25, 0x53, 0x38, 0xc0, 0x96, 0x16,
+	// 675 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x55, 0xcf, 0x6e, 0xd3, 0x4e,
+	0x10, 0x8e, 0x13, 0x27, 0x71, 0xc6, 0xee, 0xef, 0x87, 0x56, 0xa8, 0x98, 0x08, 0xaa, 0x12, 0x84,
+	0xa8, 0x04, 0x75, 0xab, 0x02, 0x05, 0xa9, 0xb7, 0x9e, 0x22, 0xe8, 0x85, 0x05, 0xc1, 0xb1, 0x5a,
+	0xdb, 0x9b, 0x60, 0xe4, 0xec, 0x06, 0x7b, 0x4d, 0xc4, 0x7b, 0x20, 0xce, 0x3c, 0x00, 0x4f, 0xc0,
+	0x13, 0x70, 0xe4, 0x19, 0xca, 0x8b, 0xa0, 0x9d, 0xb5, 0x9d, 0xff, 0x48, 0x5c, 0xb8, 0xed, 0xb7,
+	0x3b, 0xdf, 0xce, 0x37, 0xdf, 0xec, 0xd8, 0xe0, 0x7e, 0x28, 0x58, 0x9c, 0x07, 0xd3, 0x4c, 0x2a,
+	0x49, 0x3a, 0x53, 0x44, 0xfd, 0xc3, 0x71, 0xa2, 0xde, 0x15, 0x61, 0x10, 0xc9, 0xc9, 0xd1, 0x58,
+	0x8e, 0xe5, 0x11, 0x1e, 0x87, 0xc5, 0x08, 0x11, 0x02, 0x5c, 0x19, 0xda, 0xe0, 0x7b, 0x13, 0xec,
+	0x97, 0x05, 0x8b, 0x89, 0x0f, 0xdd, 0xbc, 0x08, 0xdf, 0xf3, 0x48, 0xf9, 0xd6, 0xbe, 0x75, 0xd0,
+	0xa3, 0x15, 0x24, 0xb7, 0xa0, 0x37, 0xcd, 0x78, 0x9c, 0x44, 0x4c, 0x71, 0xbf, 0x89, 0x67, 0xf3,
+	0x0d, 0xb2, 0x0b, 0x1d, 0x69, 0x68, 0x2d, 0x3c, 0x2a, 0x11, 0xb9, 0x0e, 0xed, 0x94, 0x85, 0x3c,
+	0xf5, 0x6d, 0xdc, 0x36, 0x80, 0x9c, 0xc0, 0x4e, 0x79, 0xed, 0xe5, 0x47, 0x96, 0x16, 0xdc, 0x6f,
+	0xef, 0x5b, 0x07, 0xee, 0xc9, 0x4e, 0x60, 0xd4, 0x07, 0x6f, 0xf4, 0x26, 0xf5, 0xca, 0x18, 0x44,
+	0xe4, 0x14, 0xfe, 0xaf, 0xd3, 0x95, 0xac, 0xce, 0x26, 0xd6, 0x7f, 0x75, 0x94, 0xe1, 0x1d, 0x83,
+	0x27, 0x17, 0x53, 0x75, 0x37, 0x91, 0x5c, 0xb9, 0x90, 0x29, 0x00, 0x17, 0x65, 0x96, 0x04, 0x67,
+	0x13, 0x01, 0x30, 0x02, 0xd7, 0x83, 0x6f, 0x16, 0x38, 0x6f, 0x93, 0x8c, 0xa3, 0x81, 0xf7, 0x97,
+	0x0d, 0x5c, 0x23, 0xd6, 0x7e, 0x3e, 0x58, 0xf5, 0x73, 0x2d, 0x74, 0xc1, 0xde, 0x7b, 0x4b, 0xf6,
+	0xae, 0x45, 0x56, 0x6e, 0xdf, 0x5d, 0x74, 0x7b, 0x2d, 0xca, 0x9c, 0x0d, 0x72, 0x70, 0x2b, 0xb5,
+	0x94, 0xcd, 0x56, 0x3b, 0xee, 0xfd, 0xa1, 0xe3, 0xde, 0xf6, 0x8e, 0x7b, 0x9b, 0x3b, 0xee, 0x55,
+	0x49, 0xbf, 0x34, 0x01, 0x5e, 0xa9, 0x2c, 0x89, 0x14, 0xba, 0x74, 0xbc, 0xea, 0xd2, 0x6e, 0x25,
+	0x75, 0x1e, 0x14, 0x50, 0x3e, 0x9a, 0x8b, 0x79, 0xbc, 0x6e, 0xd7, 0x36, 0xce, 0xdf, 0xfb, 0xf6,
+	0x70, 0xd9, 0xb7, 0x6d, 0x17, 0x9b, 0xa0, 0xfe, 0x0b, 0x68, 0x51, 0x3e, 0x22, 0x77, 0xc0, 0x0d,
+	0x85, 0x8c, 0xf9, 0xa5, 0xa1, 0xe2, 0x48, 0x0c, 0x1b, 0x14, 0x70, 0xf3, 0x02, 0xdf, 0x39, 0x81,
+	0x56, 0x92, 0x25, 0x66, 0x24, 0x86, 0x0d, 0xaa, 0xc1, 0x79, 0x17, 0xda, 0xf8, 0xae, 0x9e, 0xdb,
+	0x8e, 0x75, 0xad, 0x39, 0x28, 0x60, 0x67, 0x9e, 0xe5, 0xdf, 0xf5, 0xe3, 0xb3, 0x0d, 0x6d, 0xf3,
+	0xda, 0x09, 0xb4, 0x32, 0x36, 0x33, 0xb9, 0xb4, 0xc6, 0x8c, 0xcd, 0xf4, 0x5e, 0xae, 0xb2, 0xba,
+	0x24, 0x0d, 0x36, 0xd5, 0x42, 0x76, 0xa1, 0x8d, 0xd5, 0x9a, 0xe9, 0x1e, 0x36, 0xa8, 0x81, 0xe4,
+	0x19, 0xf4, 0xd4, 0xa7, 0x29, 0x8f, 0x2f, 0xf5, 0x2d, 0x66, 0xb6, 0x6f, 0x2e, 0x39, 0x1f, 0xbc,
+	0xd6, 0xc7, 0xba, 0x70, 0x31, 0x1e, 0x36, 0xa8, 0xa3, 0x4a, 0x48, 0x9e, 0x80, 0x93, 0x32, 0x31,
+	0x46, 0xa2, 0x19, 0x6f, 0x7f, 0x99, 0x78, 0xc1, 0xc4, 0xb8, 0xe6, 0x75, 0x53, 0x83, 0x50, 0x9c,
+	0x50, 0x38, 0xdb, 0x2d, 0x14, 0x27, 0x94, 0x16, 0x37, 0x4a, 0x25, 0x53, 0x38, 0xc0, 0x96, 0x16,
 	0x87, 0x90, 0xf4, 0xa1, 0x1b, 0x4a, 0x99, 0x72, 0x26, 0xfc, 0xde, 0xbe, 0x75, 0xe0, 0xe8, 0x7b,
-	0xca, 0x0d, 0x72, 0x08, 0x2d, 0x95, 0x4c, 0xb8, 0x0f, 0x98, 0xfa, 0xc6, 0x8a, 0xe6, 0x64, 0xc2,
-	0x73, 0xc5, 0x26, 0xd3, 0x61, 0x83, 0x62, 0x58, 0xff, 0x29, 0xb8, 0x0b, 0x85, 0x68, 0xab, 0xcd,
-	0x27, 0xc3, 0x7c, 0x3a, 0x0d, 0x20, 0x04, 0x5a, 0xba, 0xbc, 0xf2, 0x9b, 0x89, 0xeb, 0xfe, 0x29,
-	0xc0, 0xbc, 0x90, 0xed, 0x3c, 0x5d, 0x5e, 0xc5, 0xd3, 0xeb, 0xfe, 0x19, 0xf4, 0x6a, 0x15, 0xd8,
-	0x29, 0x7c, 0x24, 0x45, 0x94, 0x23, 0xd1, 0xa6, 0x15, 0xd4, 0x17, 0x0a, 0x26, 0x64, 0x8e, 0xdc,
-	0x36, 0x35, 0xa0, 0xee, 0xbc, 0xc1, 0x19, 0x74, 0x86, 0x9c, 0x45, 0x5c, 0xfb, 0xd6, 0x1a, 0x17,
-	0x69, 0x8a, 0x7c, 0x87, 0xe2, 0x9a, 0xdc, 0x06, 0x10, 0x52, 0xe9, 0x17, 0x48, 0x46, 0x0a, 0x6f,
-	0x70, 0x68, 0x4f, 0x48, 0x65, 0xda, 0xf4, 0xdc, 0xfb, 0x7e, 0xb5, 0x67, 0xfd, 0xb8, 0xda, 0xb3,
-	0xbe, 0xfc, 0xdc, 0xb3, 0xc2, 0x0e, 0xfe, 0x3f, 0x1e, 0xfd, 0x0e, 0x00, 0x00, 0xff, 0xff, 0x0a,
-	0x85, 0x07, 0x6d, 0x85, 0x06, 0x00, 0x00,
+	0xca, 0x0d, 0x72, 0x08, 0xb6, 0x4a, 0x26, 0xdc, 0x07, 0x4c, 0x7d, 0x63, 0x45, 0x73, 0x32, 0xe1,
+	0xb9, 0x62, 0x93, 0xe9, 0xb0, 0x41, 0x31, 0x8c, 0xf8, 0xd0, 0xc9, 0x55, 0x56, 0x44, 0xca, 0x77,
+	0x4b, 0xfb, 0x4a, 0xdc, 0x7f, 0x0a, 0xee, 0x42, 0x89, 0xba, 0x09, 0xe6, 0x63, 0x62, 0x3e, 0xaa,
+	0x06, 0x10, 0x02, 0xb6, 0x2e, 0xbc, 0xfc, 0x9a, 0xe2, 0xba, 0x7f, 0x0a, 0x30, 0x2f, 0x71, 0x3b,
+	0x4f, 0x17, 0x5e, 0xf1, 0xf4, 0xba, 0x7f, 0x06, 0xbd, 0x5a, 0x1f, 0xbe, 0x21, 0x1e, 0x49, 0x11,
+	0xe7, 0x48, 0x6c, 0xd1, 0x0a, 0xea, 0x0b, 0x05, 0x13, 0x32, 0x47, 0x6e, 0x9b, 0x1a, 0x50, 0xbf,
+	0xc9, 0xc1, 0x19, 0x74, 0x86, 0x9c, 0xc5, 0x5c, 0x3b, 0x6a, 0x8f, 0x8a, 0x34, 0x45, 0xbe, 0x43,
+	0x71, 0x4d, 0x6e, 0x03, 0x08, 0xa9, 0x74, 0x6f, 0x92, 0x48, 0xe1, 0x0d, 0x0e, 0xed, 0x09, 0xa9,
+	0xcc, 0x03, 0x3e, 0xf7, 0x7e, 0x5c, 0xed, 0x59, 0x3f, 0xaf, 0xf6, 0xac, 0xaf, 0xbf, 0xf6, 0xac,
+	0xb0, 0x83, 0x7f, 0x96, 0x47, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x56, 0xfa, 0xdf, 0x95, 0x9f,
+	0x06, 0x00, 0x00,
 }
 
 func (m *Quad) Marshal() (dAtA []byte, err error) {
@@ -1568,7 +1341,8 @@ func (m *StrictQuad_Ref) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StrictQuad_Ref_BnodeLabel) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *StrictQuad_Ref_BnodeLabel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1581,7 +1355,8 @@ func (m *StrictQuad_Ref_BnodeLabel) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 func (m *StrictQuad_Ref_Iri) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *StrictQuad_Ref_Iri) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1685,7 +1460,8 @@ func (m *Value) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Value_Raw) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Raw) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1700,7 +1476,8 @@ func (m *Value_Raw) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Str) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Str) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1713,7 +1490,8 @@ func (m *Value_Str) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Iri) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Iri) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1726,7 +1504,8 @@ func (m *Value_Iri) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Bnode) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Bnode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1739,7 +1518,8 @@ func (m *Value_Bnode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_TypedStr) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_TypedStr) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1759,7 +1539,8 @@ func (m *Value_TypedStr) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_LangStr) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_LangStr) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1779,7 +1560,8 @@ func (m *Value_LangStr) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Int) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Int) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1790,7 +1572,8 @@ func (m *Value_Int) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Float) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Float) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1802,7 +1585,8 @@ func (m *Value_Float) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Boolean) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Boolean) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1818,7 +1602,8 @@ func (m *Value_Boolean) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 func (m *Value_Time) MarshalTo(dAtA []byte) (int, error) {
-	return m.MarshalToSizedBuffer(dAtA[:m.ProtoSize()])
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
 func (m *Value_Time) MarshalToSizedBuffer(dAtA []byte) (int, error) {
@@ -1834,6 +1619,22 @@ func (m *Value_Time) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		}
 		i--
 		dAtA[i] = 0x52
+	}
+	return len(dAtA) - i, nil
+}
+func (m *Value_Struct) MarshalTo(dAtA []byte) (int, error) {
+	size := m.ProtoSize()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Value_Struct) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Struct != nil {
+		i -= len(m.Struct)
+		copy(dAtA[i:], m.Struct)
+		i = encodeVarintQuads(dAtA, i, uint64(len(m.Struct)))
+		i--
+		dAtA[i] = 0x5a
 	}
 	return len(dAtA) - i, nil
 }
@@ -2321,6 +2122,18 @@ func (m *Value_Time) ProtoSize() (n int) {
 	_ = l
 	if m.Time != nil {
 		l = m.Time.ProtoSize()
+		n += 1 + l + sovQuads(uint64(l))
+	}
+	return n
+}
+func (m *Value_Struct) ProtoSize() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Struct != nil {
+		l = len(m.Struct)
 		n += 1 + l + sovQuads(uint64(l))
 	}
 	return n
@@ -3941,6 +3754,39 @@ func (m *Value) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			m.Value = &Value_Time{v}
+			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Struct", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuads
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthQuads
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuads
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := make([]byte, postIndex-iNdEx)
+			copy(v, dAtA[iNdEx:postIndex])
+			m.Value = &Value_Struct{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

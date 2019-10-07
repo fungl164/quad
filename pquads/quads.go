@@ -1,6 +1,8 @@
 package pquads
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"time"
 
@@ -49,9 +51,39 @@ func MakeValue(qv quad.Value) *Value {
 			Seconds: seconds,
 			Nanos:   nanos,
 		}}}
+	case quad.Struct:
+		s, err := serializeStruct(v)
+		if err != nil {
+			panic(fmt.Errorf("unsupported type: %T", qv))
+		}
+		return &Value{Value: &Value_Struct{Struct: s}}
 	default:
 		panic(fmt.Errorf("unsupported type: %T", qv))
 	}
+}
+
+func serializeStruct(v interface{}) ([]byte, error) {
+	var buff bytes.Buffer
+	en := gob.NewEncoder(&buff)
+
+	err := en.Encode(v)
+	if err != nil {
+		return nil, err
+	}
+
+	return buff.Bytes(), nil
+}
+
+func deserializeStruct(data []byte, v interface{}) error {
+	var buff bytes.Buffer
+	de := gob.NewDecoder(&buff)
+
+	_, err := buff.Write(data)
+	if err != nil {
+		return err
+	}
+
+	return de.Decode(v)
 }
 
 // MarshalValue is a helper for serialization of quad.Value.
@@ -114,6 +146,10 @@ func (m *Value) ToNative() (qv quad.Value) {
 			t = time.Unix(v.Time.Seconds, int64(v.Time.Nanos)).UTC()
 		}
 		return quad.Time(t)
+	case *Value_Struct:
+		var s interface{}
+		deserializeStruct(v.Struct, s)
+		return quad.Struct{s}
 	default:
 		panic(fmt.Errorf("unsupported type: %T", m.Value))
 	}

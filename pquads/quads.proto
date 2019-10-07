@@ -100,6 +100,7 @@ message Value {
     double float = 8;
     bool boolean = 9;
     Timestamp time = 10;
+    bytes struct = 11;
   }
 }
 
