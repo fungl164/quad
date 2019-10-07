@@ -14,8 +14,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/cayleygraph/quad/voc"
-	"github.com/cayleygraph/quad/voc/schema"
+	"github.com/fungl164/quad/voc"
+	"github.com/fungl164/quad/voc/schema"
 )
 
 func IsValidValue(v Value) bool {
