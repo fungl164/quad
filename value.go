@@ -128,7 +128,6 @@ func AsValue(v interface{}) (out Value, ok bool) {
 		out = Time(v)
 	default:
 		out = Struct{v}
-		// return nil, false
 	}
 	return out, true
 }
