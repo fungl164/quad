@@ -11,6 +11,11 @@ import (
 
 //go:generate protoc --proto_path=$GOPATH/src:. --gogo_out=. quads.proto
 
+// Register enables serialization of user-defined golang structs via gob
+func Register(v interface{}) {
+	gob.Register(v)
+}
+
 // MakeValue converts quad.Value to its protobuf representation.
 func MakeValue(qv quad.Value) *Value {
 	if qv == nil {
@@ -54,7 +59,7 @@ func MakeValue(qv quad.Value) *Value {
 	case quad.Struct:
 		s, err := serializeStruct(v)
 		if err != nil {
-			panic(fmt.Errorf("unsupported type: %T", qv))
+			panic(fmt.Errorf("unsupported type: %T, error: %s", qv, err.Error()))
 		}
 		return &Value{Value: &Value_Struct{Struct: s}}
 	default:
@@ -63,27 +68,11 @@ func MakeValue(qv quad.Value) *Value {
 }
 
 func serializeStruct(v interface{}) ([]byte, error) {
-	var buff bytes.Buffer
-	en := gob.NewEncoder(&buff)
-
-	err := en.Encode(v)
-	if err != nil {
+	buf := new(bytes.Buffer)
+	if err := gob.NewEncoder(buf).Encode(v); err != nil {
 		return nil, err
 	}
-
-	return buff.Bytes(), nil
-}
-
-func deserializeStruct(data []byte, v interface{}) error {
-	var buff bytes.Buffer
-	de := gob.NewDecoder(&buff)
-
-	_, err := buff.Write(data)
-	if err != nil {
-		return err
-	}
-
-	return de.Decode(v)
+	return buf.Bytes(), nil
 }
 
 // MarshalValue is a helper for serialization of quad.Value.
@@ -147,12 +136,22 @@ func (m *Value) ToNative() (qv quad.Value) {
 		}
 		return quad.Time(t)
 	case *Value_Struct:
-		var s interface{}
-		deserializeStruct(v.Struct, s)
-		return quad.Struct{s}
+		s, err := deserializeStruct(v.Struct)
+		if err != nil {
+			panic(fmt.Errorf("unsupported struct type: %T, error: ", m.Value, err.Error()))
+		}
+		return quad.Struct(*s)
 	default:
 		panic(fmt.Errorf("unsupported type: %T", m.Value))
 	}
+}
+
+func deserializeStruct(data []byte) (*quad.Struct, error) {
+	v := new(quad.Struct)
+	if err := gob.NewDecoder(bytes.NewBuffer(data)).Decode(v); err != nil {
+		return nil, err
+	}
+	return v, nil
 }
 
 // ToNative converts protobuf Value to quad.Value.

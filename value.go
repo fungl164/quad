@@ -127,7 +127,8 @@ func AsValue(v interface{}) (out Value, ok bool) {
 	case time.Time:
 		out = Time(v)
 	default:
-		return nil, false
+		out = Struct{v}
+		// return nil, false
 	}
 	return out, true
 }
@@ -218,6 +219,7 @@ func (s TypedString) Native() interface{} {
 // Error will be returned if the type was recognizes, but parsing failed.
 func (s TypedString) ParseValue() (Value, error) {
 	fnc := knownConversions[s.Type.Full()]
+	fmt.Println(s.Type.Full())
 	if fnc == nil {
 		return s, nil
 	}
@@ -405,20 +407,12 @@ func stringToBytes(s string) (Value, error) {
 }
 
 func stringToStruct(s string) (Value, error) {
-	var buff bytes.Buffer
-	de := gob.NewDecoder(&buff)
-
-	_, err := buff.Write([]byte(s))
+	var v Struct
+	err := gob.NewDecoder(bytes.NewBuffer([]byte(s))).Decode(v)
 	if err != nil {
 		return nil, err
 	}
-
-	var v interface{}
-	err = de.Decode(v)
-	if err != nil {
-		return nil, err
-	}
-	return Struct{v}, nil
+	return v, nil
 }
 
 // Int is a native wrapper for int64 type.
