@@ -67,6 +67,7 @@ func MakeValue(qv quad.Value) *Value {
 	}
 }
 
+// serializeStruct is a helper for serialization of native golang structs
 func serializeStruct(v interface{}) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	if err := gob.NewEncoder(buf).Encode(v); err != nil {
@@ -75,12 +76,22 @@ func serializeStruct(v interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+func Marshal(source quad.Value) (data []byte, err error) {
+	data, err = MarshalValue(source)
+	return
+}
+
 // MarshalValue is a helper for serialization of quad.Value.
 func MarshalValue(v quad.Value) ([]byte, error) {
 	if v == nil {
 		return nil, nil
 	}
 	return MakeValue(v).Marshal()
+}
+
+func Unmarshal(data []byte, dest *quad.Value) (err error) {
+	*dest, err = UnmarshalValue(data)
+	return
 }
 
 // UnmarshalValue is a helper for deserialization of quad.Value.
@@ -146,6 +157,7 @@ func (m *Value) ToNative() (qv quad.Value) {
 	}
 }
 
+// deserializeStruct is a helper for deserialization of native golang structs
 func deserializeStruct(data []byte) (*quad.Struct, error) {
 	v := new(quad.Struct)
 	if err := gob.NewDecoder(bytes.NewBuffer(data)).Decode(v); err != nil {
